@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String?
+  email       String   @unique
+  image       String?
+  createdAt   DateTime @default(now())
+  analyses    Analysis[]
+}
+
+model Contest {
+  id              String   @id @default(cuid())
+  title           String
+  organizer       String
+  category        String
+  maxAmount       Int?
+  supportPeriod   Int?
+  region          String?
+  targetAudience  String
+  deadline        DateTime?
+  url             String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SgisData {
+  id            String   @id @default(cuid())
+  regionCode    String
+  regionName    String
+  dataType      String   // 'population', 'business', 'startup'
+  ageGroup      String?
+  businessType  String?
+  value         Int
+  year          Int
+  createdAt     DateTime @default(now())
+
+  @@unique([regionCode, dataType, ageGroup, businessType, year])
+}
+
+model Analysis {
+  id              String   @id @default(cuid())
+  userId          String
+  businessType    String
+  teamSize        String
+  targetRegion    String?
+  ideaDescription String
+  recommendations String   // JSON string
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
