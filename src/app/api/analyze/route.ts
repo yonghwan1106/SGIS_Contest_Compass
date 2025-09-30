@@ -169,10 +169,13 @@ export async function POST(request: NextRequest) {
     if (userInput.targetRegion) {
       console.log(`Fetching SGIS data for region: ${userInput.targetRegion}`);
       try {
-        // 실제 SGIS API 호출은 나중에 구현
-        // regionData = await sgisClient.getPopulationData(userInput.targetRegion);
+        // SGIS API를 통해 실제 지역 데이터 가져오기
+        regionData = await sgisClient.getPopulationData(userInput.targetRegion);
+        if (regionData) {
+          console.log(`SGIS data loaded for ${regionData.regionName}: ${regionData.totalPopulation} people`);
+        }
       } catch (error) {
-        console.warn('SGIS data fetch failed:', error);
+        console.warn('SGIS data fetch failed, continuing without region data:', error);
       }
     }
 
