@@ -2,17 +2,21 @@ import Anthropic from '@anthropic-ai/sdk';
 import { UserInput, AnalysisResult, ContestRecommendation } from '@/types';
 
 export class ClaudeAnalyzer {
-  private anthropic: Anthropic;
+  private _anthropic: Anthropic | null = null;
 
   constructor() {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY is not set in environment variables');
-    }
+    // Lazy initialization - actual client is created on first use
+  }
 
-    this.anthropic = new Anthropic({
-      apiKey,
-    });
+  private get anthropic(): Anthropic {
+    if (!this._anthropic) {
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        throw new Error('ANTHROPIC_API_KEY is not set in environment variables');
+      }
+      this._anthropic = new Anthropic({ apiKey });
+    }
+    return this._anthropic;
   }
 
   async analyzeUserInput(input: UserInput): Promise<AnalysisResult> {
